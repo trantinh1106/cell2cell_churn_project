@@ -1,0 +1,275 @@
+
+======================================================================
+CHƯƠNG TRÌNH HUẤN LUYỆN DỰ ÁN CELL2CELL TELECOM CHURN
+======================================================================
+
+======================================================================
+1. LOADING DATASET
+======================================================================
+Dataset Loaded Successfully from: data\cell2celltrain.csv
+Tổng số dòng: 51,047 | Tổng số cột: 58
+
+======================================================================
+2. PREPROCESSING & ADVANCED FEATURE ENGINEERING
+======================================================================
+  [✓] Đã tạo thành công 8 đặc trưng nghiệp vụ viễn thông:
+      - Dropped_Call_Rate, Blocked_Call_Rate, CustomerCare_Per_Month
+      - Overage_Ratio, Revenue_Per_Minute, Usage_Revenue_Divergence
+      - Equipment_Age_Ratio, Active_Sub_Ratio, Retention_Success_Rate
+
+Các cột phân loại được One-Hot Encoding: ['PrizmCode', 'Occupation', 'MaritalStatus']
+
+Kích thước ma trận đặc trưng X sau tiền xử lý: (51047, 74)
+Kích thước vector nhãn y                     : (51047,)
+
+Chia tập dữ liệu (Stratified 80/20):
+  + Tập Train: 40,837 mẫu
+  + Tập Test : 10,210 mẫu
+  [✓] Xử lý giá trị khuyết thiếu (Median Imputation) hoàn tất.
+  [✓] Chuẩn hoá đặc trưng (RobustScaler - Kháng Outlier) hoàn tất.
+
+Phân bố nhãn tập Train ban đầu: {0: np.int64(29068), 1: np.int64(11769)}
+
+======================================================================
+EXPLORATORY DATA ANALYSIS (EDA)
+======================================================================
+
+--- 5 DÒNG ĐẦU TIÊN CỦA BỘ DỮ LIỆU ---
+   Churn  MonthlyRevenue  MonthlyMinutes  TotalRecurringCharge  DirectorAssistedCalls  ...  MadeCallToRetentionTeam  CreditRating  PrizmCode    Occupation  MaritalStatus
+0      1           24.00           219.0                  22.0                   0.25  ...                        1             1   Suburban  Professional             No
+1      1           16.99            10.0                  17.0                   0.00  ...                        0             4   Suburban  Professional            Yes
+2      0           38.00             8.0                  38.0                   0.00  ...                        0             3       Town        Crafts            Yes
+3      0           82.28          1312.0                  75.0                   1.24  ...                        0             4      Other         Other             No
+4      1           17.14             0.0                  17.0                   0.00  ...                        0             1      Other  Professional            Yes
+
+[5 rows x 57 columns]
+
+--- KÍCH THƯỚC DỮ LIỆU (SHAPE) ---
+Số dòng: 51,047, Số cột: 57
+
+--- TỔNG HỢP GIÁ TRỊ THIẾU (MISSING VALUES > 0) ---
+  + MonthlyRevenue           :    156 dòng khuyết (0.31%)
+  + MonthlyMinutes           :    156 dòng khuyết (0.31%)
+  + TotalRecurringCharge     :    156 dòng khuyết (0.31%)
+  + DirectorAssistedCalls    :    156 dòng khuyết (0.31%)
+  + OverageMinutes           :    156 dòng khuyết (0.31%)
+  + RoamingCalls             :    156 dòng khuyết (0.31%)
+  + PercChangeMinutes        :    367 dòng khuyết (0.72%)
+  + PercChangeRevenues       :    367 dòng khuyết (0.72%)
+  + ServiceArea              :     24 dòng khuyết (0.05%)
+  + Handsets                 :      1 dòng khuyết (0.00%)
+  + HandsetModels            :      1 dòng khuyết (0.00%)
+  + CurrentEquipmentDays     :      1 dòng khuyết (0.00%)
+  + AgeHH1                   :    909 dòng khuyết (1.78%)
+  + AgeHH2                   :    909 dòng khuyết (1.78%)
+  + HandsetPrice             :  28982 dòng khuyết (56.78%)
+
+--- THỐNG KÊ MÔ TẢ CÁC BIẾN SỐ TIÊU BIỂU ---
+       MonthlyRevenue  MonthlyMinutes  TotalRecurringCharge  MonthsInService  CurrentEquipmentDays  CustomerCareCalls
+count    50891.000000    50891.000000          50891.000000     51047.000000          51046.000000       51047.000000
+mean        58.834492      525.653416             46.830088        18.756264            380.545841           1.868999
+std         44.507336      529.871063             23.848871         9.800138            253.801982           5.096138
+min         -6.170000        0.000000            -11.000000         6.000000             -5.000000           0.000000
+25%         33.610000      158.000000             30.000000        11.000000            205.000000           0.000000
+50%         48.460000      366.000000             45.000000        16.000000            329.000000           0.000000
+75%         71.065000      723.000000             60.000000        24.000000            515.000000           1.700000
+max       1223.380000     7359.000000            400.000000        61.000000           1812.000000         327.300000
+
+--- PHÂN BỐ NHÃN MỤC TIÊU (Churn) ---
+  + Lớp 0: 36,336 mẫu (71.18%)
+  + Lớp 1: 14,711 mẫu (28.82%)
+Saved: output\eda\class_distribution.png
+Saved: output\eda\monthlyrevenue_distribution.png
+Saved: output\eda\monthlyminutes_distribution.png
+Saved: output\eda\currentequipmentdays_distribution.png
+Saved: output\eda\customercare_vs_churn.png
+Saved: output\eda\correlation_heatmap.png
+
+============================================================
+TRAINING LOGISTIC REGRESSION
+============================================================
+
+============================================================
+Logistic Regression
+============================================================
+Accuracy    : 0.5975 (59.75%)
+Precision   : 0.3710
+Recall      : 0.5707
+F1 Score    : 0.4497
+ROC AUC     : 0.6224
+
+Classification Report:
+
+              precision    recall  f1-score   support
+
+           0       0.78      0.61      0.68      7268
+           1       0.37      0.57      0.45      2942
+
+    accuracy                           0.60     10210
+   macro avg       0.57      0.59      0.57     10210
+weighted avg       0.66      0.60      0.62     10210
+
+Saved: output\confusion_matrix\Logistic Regression.png
+Saved: output\roc_curve\Logistic Regression.png
+
+============================================================
+TRAINING LINEAR SVM
+============================================================
+
+============================================================
+Linear SVM
+============================================================
+Accuracy    : 0.5975 (59.75%)
+Precision   : 0.3707
+Recall      : 0.5690
+F1 Score    : 0.4489
+ROC AUC     : 0.6220
+
+Classification Report:
+
+              precision    recall  f1-score   support
+
+           0       0.78      0.61      0.68      7268
+           1       0.37      0.57      0.45      2942
+
+    accuracy                           0.60     10210
+   macro avg       0.57      0.59      0.57     10210
+weighted avg       0.66      0.60      0.62     10210
+
+Saved: output\confusion_matrix\Linear SVM.png
+Saved: output\roc_curve\Linear SVM.png
+
+============================================================
+TRAINING KNN
+============================================================
+
+============================================================
+KNN
+============================================================
+Accuracy    : 0.6910 (69.10%)
+Precision   : 0.3859
+Recall      : 0.1224
+F1 Score    : 0.1858
+ROC AUC     : 0.5581
+
+Classification Report:
+
+              precision    recall  f1-score   support
+
+           0       0.72      0.92      0.81      7268
+           1       0.39      0.12      0.19      2942
+
+    accuracy                           0.69     10210
+   macro avg       0.55      0.52      0.50     10210
+weighted avg       0.62      0.69      0.63     10210
+
+Saved: output\confusion_matrix\KNN.png
+Saved: output\roc_curve\KNN.png
+
+============================================================
+TRAINING DECISION TREE
+============================================================
+
+============================================================
+Decision Tree
+============================================================
+Accuracy    : 0.5544 (55.44%)
+Precision   : 0.3598
+Recall      : 0.7012
+F1 Score    : 0.4756
+ROC AUC     : 0.6340
+
+Classification Report:
+
+              precision    recall  f1-score   support
+
+           0       0.80      0.49      0.61      7268
+           1       0.36      0.70      0.48      2942
+
+    accuracy                           0.55     10210
+   macro avg       0.58      0.60      0.54     10210
+weighted avg       0.68      0.55      0.57     10210
+
+Saved: output\confusion_matrix\Decision Tree.png
+Saved: output\roc_curve\Decision Tree.png
+
+============================================================
+TRAINING RANDOM FOREST
+============================================================
+
+============================================================
+Random Forest
+============================================================
+Accuracy    : 0.6110 (61.10%)
+Precision   : 0.3915
+Recall      : 0.6319
+F1 Score    : 0.4835
+ROC AUC     : 0.6670
+
+Classification Report:
+
+              precision    recall  f1-score   support
+
+           0       0.80      0.60      0.69      7268
+           1       0.39      0.63      0.48      2942
+
+    accuracy                           0.61     10210
+   macro avg       0.60      0.62      0.59     10210
+weighted avg       0.68      0.61      0.63     10210
+
+Saved: output\confusion_matrix\Random Forest.png
+Saved: output\roc_curve\Random Forest.png
+
+============================================================
+TRAINING XGBOOST
+============================================================
+
+============================================================
+XGBoost
+============================================================
+Accuracy    : 0.6147 (61.47%)
+Precision   : 0.3967
+Recall      : 0.6475
+F1 Score    : 0.4920
+ROC AUC     : 0.6773
+
+Classification Report:
+
+              precision    recall  f1-score   support
+
+           0       0.81      0.60      0.69      7268
+           1       0.40      0.65      0.49      2942
+
+    accuracy                           0.61     10210
+   macro avg       0.60      0.62      0.59     10210
+weighted avg       0.69      0.61      0.63     10210
+
+Saved: output\confusion_matrix\XGBoost.png
+Saved: output\roc_curve\XGBoost.png
+
+======================================================================
+MODEL PERFORMANCE COMPARISON
+======================================================================
+              Model  Accuracy  Precision   Recall       F1  ROC_AUC
+Logistic Regression  0.597453   0.370968 0.570700 0.449652 0.622427
+         Linear SVM  0.597453   0.370682 0.569001 0.448914 0.621970
+                KNN  0.690989   0.385852 0.122366 0.185806 0.558065
+      Decision Tree  0.554358   0.359784 0.701224 0.475565 0.633989
+      Random Forest  0.610970   0.391533 0.631883 0.483485 0.666977
+            XGBoost  0.614691   0.396710 0.647519 0.491994 0.677308
+
+Saved : output\model_comparison.csv
+Saved : output\model_accuracy.png
+  [✓] Biểu đồ đặc trưng quan trọng đã lưu tại: output\top_feature_importance.png
+  [✓] Đã lưu mô hình XGBoost và cấu hình vào thư mục output/ phục vụ Streamlit App.
+
+======================================================================
+TẤT CẢ CÁC TÁC VỤ ĐÃ HOÀN TẤT THÀNH CÔNG
+======================================================================
+  [✓] Log tiến trình đã lưu tại        : output/training_log.txt
+  [✓] Bảng so sánh mô hình đã lưu tại : output/model_comparison.csv
+  [✓] Biểu đồ so sánh đã lưu tại      : output/model_accuracy.png
+  [✓] Biểu đồ đặc trưng quan trọng    : output/top_feature_importance.png
+  [✓] Biểu đồ EDA đã lưu tại          : output/eda/
+  [✓] Ma trận nhầm lẫn đã lưu tại    : output/confusion_matrix/
+  [✓] Đường cong ROC đã lưu tại       : output/roc_curve/
